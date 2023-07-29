@@ -1,13 +1,14 @@
 package osteam.backland.domain.person.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToOne;
 import lombok.Getter;
 import lombok.Setter;
-import osteam.backland.domain.phone.entity.PhoneOneToMany;
 import osteam.backland.domain.phone.entity.PhoneOneToOne;
 import osteam.backland.global.entity.PrimaryKeyEntity;
 
-import java.util.List;
 
 @Entity
 @Setter
