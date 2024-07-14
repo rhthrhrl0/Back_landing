@@ -1,9 +1,6 @@
 package osteam.backland.domain.person.entity;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import osteam.backland.domain.phone.entity.PhoneOneToOne;
@@ -18,7 +15,7 @@ public class PersonOneToOne extends PrimaryKeyEntity {
     private String name;
 
     @OneToOne(
-            mappedBy = "personOneToOne",
+            mappedBy = "person",
             orphanRemoval = true,
             cascade = CascadeType.ALL,
             fetch = FetchType.LAZY

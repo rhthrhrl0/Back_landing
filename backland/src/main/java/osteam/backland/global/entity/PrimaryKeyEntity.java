@@ -2,7 +2,6 @@ package osteam.backland.global.entity;
 
 import com.github.f4b6a3.ulid.UlidCreator;
 import jakarta.persistence.*;
-import org.hibernate.Hibernate;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.type.SqlTypes;
@@ -24,22 +23,22 @@ public abstract class PrimaryKeyEntity implements Persistable<UUID> {
     private Boolean _isNew = true;
 
     @Override
-    public UUID getId(){
+    public UUID getId() {
         return id;
     }
 
     @Override
-    public boolean isNew(){
+    public boolean isNew() {
         return _isNew;
     }
 
     @Override
-    public boolean equals(Object other){
+    public boolean equals(Object other) {
         if (other == null)
             return false;
 
         if (other instanceof HibernateProxy && this.getClass() != other.getClass())
-        return false;
+            return false;
 
         return id == getIdentifier(other);
     }
