@@ -1,16 +1,35 @@
 package osteam.backland.domain.person.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import osteam.backland.domain.person.entity.PersonOneToOne;
 import osteam.backland.domain.person.entity.dto.PersonDTO;
+import osteam.backland.domain.person.repository.PersonOneToOneRepository;
+import osteam.backland.domain.phone.entity.PhoneOneToOne;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor // 빈 주입 받기위해, 롬복의 생성자 자동 생성 기능 사용
+@Transactional
 public class PersonCreateService {
+
+    private final PersonOneToOneRepository personOneToOneRepository;
 
     public PersonDTO createAll(String name, String phone) {
 
         return null;
+    }
+
+    public PersonDTO createOneToOne(PersonDTO personDTO) {
+        PersonOneToOne personOneToOne = PersonOneToOne.builder()
+                .name(personDTO.getName())
+                .phoneOneToOne(PhoneOneToOne.builder().phone(personDTO.getPhone()).build())
+                .build();
+
+        personOneToOneRepository.save(personOneToOne);
+        return personDTO;
     }
 
     /**

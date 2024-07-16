@@ -1,13 +1,12 @@
 package osteam.backland.domain.person.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import osteam.backland.domain.person.controller.request.PersonCreateRequest;
 import osteam.backland.domain.person.controller.response.PersonResponse;
+import osteam.backland.domain.person.entity.dto.PersonDTO;
 import osteam.backland.domain.person.service.PersonCreateService;
 import osteam.backland.domain.person.service.PersonSearchService;
 import osteam.backland.domain.person.service.PersonUpdateService;
@@ -25,11 +24,21 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/person")
+@RequiredArgsConstructor
 public class PersonController {
 
-    private PersonCreateService personCreateService;
-    private PersonUpdateService personUpdateService;
-    private PersonSearchService personSearchService;
+    private final PersonCreateService personCreateService;
+    private final PersonUpdateService personUpdateService;
+    private final PersonSearchService personSearchService;
+
+    @PostMapping("/create")
+    public PersonDTO create(@RequestBody PersonCreateRequest personCreateRequest) {
+        PersonDTO personDTO = new PersonDTO();
+        personDTO.setName(personCreateRequest.getName());
+        personDTO.setPhone(personCreateRequest.getPhone());
+        return personCreateService.createOneToOne(personDTO);
+    }
+
 
     /**
      * 등록 기능

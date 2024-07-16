@@ -4,14 +4,16 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 import osteam.backland.domain.person.entity.PersonOneToOne;
 import osteam.backland.global.entity.PrimaryKeyEntity;
 
 @Entity
 @Getter
-@Setter
+@NoArgsConstructor
+@Builder(toBuilder = true)
 public class PhoneOneToOne extends PrimaryKeyEntity {
 
     private String phone;
@@ -19,4 +21,13 @@ public class PhoneOneToOne extends PrimaryKeyEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_user_id", referencedColumnName = "id")
     private PersonOneToOne person;
+
+    public PhoneOneToOne(String phone, PersonOneToOne person) {
+        this.phone = phone;
+        updatePerson(person);
+    }
+
+    public void updatePerson(PersonOneToOne personOneToOne) {
+        this.person = personOneToOne;
+    }
 }

@@ -11,5 +11,4 @@ import osteam.backland.global.entity.PrimaryKeyEntity;
 public class PersonOnly extends PrimaryKeyEntity {
     private String name;
     private String phone;
-
 }

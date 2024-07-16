@@ -2,14 +2,16 @@ package osteam.backland.domain.person.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.Builder;
 import osteam.backland.domain.phone.entity.PhoneOneToOne;
 import osteam.backland.global.entity.PrimaryKeyEntity;
 
 
 @Entity
-@Setter
 @Getter
+@Builder(toBuilder = true)
+@NoArgsConstructor
 public class PersonOneToOne extends PrimaryKeyEntity {
 
     private String name;
@@ -21,4 +23,14 @@ public class PersonOneToOne extends PrimaryKeyEntity {
             fetch = FetchType.LAZY
     )
     private PhoneOneToOne phoneOneToOne;
+
+    public PersonOneToOne(String name, PhoneOneToOne phoneOneToOne) {
+        this.name = name;
+        updatePhoneNumber(phoneOneToOne);
+    }
+
+    public void updatePhoneNumber(PhoneOneToOne phoneOneToOne) {
+        this.phoneOneToOne = phoneOneToOne;
+        phoneOneToOne.updatePerson(this);
+    }
 }
