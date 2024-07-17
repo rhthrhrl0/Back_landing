@@ -47,7 +47,7 @@ public class PersonController {
                 .phone(personCreateRequest.getPhone()).build();
 
         // BadRequest 로 처리하고 싶어서, ResponseEntity.of() 안씀.
-        return Optional.ofNullable(personCreateService.createOneToOne(personDTO))
+        return Optional.ofNullable(personCreateService.createAll(personDTO))
                 .map(pDto -> ResponseEntity.ok().body(pDto.getName()))
                 .orElseGet(() -> ResponseEntity.badRequest().build());
     }

@@ -17,12 +17,18 @@ public class PersonCreateService {
 
     private final PersonOneToOneRepository personOneToOneRepository;
 
-    public PersonDTO createAll(String name, String phone) {
+    // 외부에 공개하는 용도구나. 이거 하나로 모든 관계형 매핑 테이블들 조작할 수 있게
+    public PersonDTO createAll(PersonDTO personDTO) {
+        createOneToOne(personDTO);
+        // 다른 녀석들도 들어와야 함.
 
-        return null;
+        return PersonDTO.builder()
+                .name(personDTO.getName())
+                .phone(personDTO.getPhone())
+                .build();
     }
 
-    public PersonDTO createOneToOne(PersonDTO personDTO) {
+    private PersonDTO createOneToOne(PersonDTO personDTO) {
         PersonOneToOne personOneToOne = PersonOneToOne.builder()
                 .name(personDTO.getName())
                 .phoneOneToOne(PhoneOneToOne.builder().phone(personDTO.getPhone()).build())
