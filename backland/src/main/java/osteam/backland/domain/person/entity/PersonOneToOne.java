@@ -24,6 +24,7 @@ public class PersonOneToOne extends PrimaryKeyEntity {
     )
     private PhoneOneToOne phoneOneToOne;
 
+    // 빌더에 의해 간접적으로 호출 될 것임
     public PersonOneToOne(String name, PhoneOneToOne phoneOneToOne) {
         this.name = name;
         updatePhoneNumber(phoneOneToOne);
