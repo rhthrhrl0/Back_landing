@@ -4,12 +4,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import osteam.backland.domain.person.entity.PersonOneToMany;
 import osteam.backland.domain.person.entity.PersonOneToOne;
 import osteam.backland.domain.person.entity.PersonOnly;
 import osteam.backland.domain.person.entity.dto.PersonDTO;
+import osteam.backland.domain.person.repository.PersonOneToManyRepository;
 import osteam.backland.domain.person.repository.PersonOneToOneRepository;
 import osteam.backland.domain.person.repository.PersonOnlyRepository;
+import osteam.backland.domain.phone.entity.PhoneOneToMany;
 import osteam.backland.domain.phone.entity.PhoneOneToOne;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 @Service
 @Slf4j
@@ -17,14 +23,12 @@ import osteam.backland.domain.phone.entity.PhoneOneToOne;
 @Transactional
 public class PersonCreateService {
     private final PersonUpdateService personUpdateService;
-    private final PersonOneToOneRepository personOneToOneRepository;
     private final PersonOnlyRepository personOnlyRepository;
-
+    private final PersonOneToOneRepository personOneToOneRepository;
+    private final PersonOneToManyRepository personOneToManyRepository;
 
     // 외부에 공개하는 용도구나. 이거 하나로 모든 관계형 매핑 테이블들 조작할 수 있게
     public PersonDTO createAll(PersonDTO personDTO) {
-
-
         one(personDTO);
         oneToOne(personDTO);
         oneToMany(personDTO);
@@ -65,6 +69,14 @@ public class PersonCreateService {
      * Phone과 OneToMany 관계인 person 생성
      */
     private PersonDTO oneToMany(PersonDTO personDTO) {
-        return null;
+        PersonOneToMany personOneToMany = PersonOneToMany.builder()
+                .name(personDTO.getName())
+                .phoneOneToMany(new ArrayList<>(Collections.singletonList(PhoneOneToMany.builder()
+                        .phone(personDTO.getPhone())
+                        .build()
+                )))
+                .build();
+        personOneToManyRepository.save(personOneToMany);
+        return personDTO.toBuilder().build();
     }
 }
