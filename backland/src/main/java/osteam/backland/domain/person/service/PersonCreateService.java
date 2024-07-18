@@ -13,9 +13,7 @@ import osteam.backland.domain.person.repository.PersonOneToOneRepository;
 import osteam.backland.domain.person.repository.PersonOnlyRepository;
 import osteam.backland.domain.phone.entity.PhoneOneToMany;
 import osteam.backland.domain.phone.entity.PhoneOneToOne;
-
-import java.util.ArrayList;
-import java.util.Collections;
+import osteam.backland.domain.phone.repository.PhoneOneToManyRepository;
 
 @Service
 @Slf4j
@@ -26,6 +24,7 @@ public class PersonCreateService {
     private final PersonOnlyRepository personOnlyRepository;
     private final PersonOneToOneRepository personOneToOneRepository;
     private final PersonOneToManyRepository personOneToManyRepository;
+    private final PhoneOneToManyRepository phoneOneToManyRepository;
 
     // 외부에 공개하는 용도구나. 이거 하나로 모든 관계형 매핑 테이블들 조작할 수 있게
     public PersonDTO createAll(PersonDTO personDTO) {
@@ -69,13 +68,38 @@ public class PersonCreateService {
      * Phone과 OneToMany 관계인 person 생성
      */
     private PersonDTO oneToMany(PersonDTO personDTO) {
-        PersonOneToMany personOneToMany = PersonOneToMany.builder()
-                .name(personDTO.getName())
-                .phoneOneToMany(PhoneOneToMany.builder()
-                        .phone(personDTO.getPhone())
-                        .build())
-                .build();
-        personOneToManyRepository.save(personOneToMany);
+        phoneOneToManyRepository.findByPhone(personDTO.getPhone())
+                .ifPresentOrElse((phoneOneToMany) -> {
+                    personOneToManyRepository.findByName(personDTO.getName())
+                            .ifPresentOrElse((personOneToMany) -> {
+                                System.out.println("폰 정보와 사람정보 둘 다 있음. 폰의 주인 정보를 변경");
+                                personOneToMany.addPhone(phoneOneToMany);
+                            }, () -> {
+                                System.out.println("폰 정보 있지만 사람정보는 없음. 사람 새로 추가하고 폰의 주인 정보를 변경");
+                                PersonOneToMany personOneToMany = PersonOneToMany.builder()
+                                        .name(personDTO.getName())
+                                        .phoneOneToMany(phoneOneToMany)
+                                        .build();
+                                personOneToManyRepository.save(personOneToMany);
+                            });
+                }, () -> { // 폰 조회 없는 경우. 신규 등록 폰 번호
+                    personOneToManyRepository.findByName(personDTO.getName())
+                            .ifPresentOrElse(personOneToMany -> {
+                                System.out.println("폰 정보 없지만 사람정보는 있음. 폰 새로 정보 추가");
+                                personOneToMany.addPhone(PhoneOneToMany.builder()
+                                        .phone(personDTO.getPhone())
+                                        .build());
+                            }, () -> {
+                                System.out.println("폰 정보 없고 사람정보도 없음. 사람과 폰 둘 다 추가");
+                                PersonOneToMany personOneToMany = PersonOneToMany.builder()
+                                        .name(personDTO.getName())
+                                        .phoneOneToMany(PhoneOneToMany.builder()
+                                                .phone(personDTO.getPhone())
+                                                .build())
+                                        .build();
+                                personOneToManyRepository.save(personOneToMany);
+                            });
+                });
         return personDTO.toBuilder().build();
     }
 }

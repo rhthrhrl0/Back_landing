@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import osteam.backland.domain.person.controller.request.PersonCreateRequest;
+import osteam.backland.domain.person.controller.request.SearchByPersonNameRequest;
 import osteam.backland.domain.person.controller.response.PersonResponse;
 import osteam.backland.domain.person.entity.dto.PersonDTO;
 import osteam.backland.domain.person.service.PersonCreateService;
@@ -63,11 +64,13 @@ public class PersonController {
     /**
      * 이름으로 검색
      *
-     * @param name
+     * @param searchByPersonNameRequest
      */
     @GetMapping("/name")
-    public ResponseEntity<List<PersonResponse>> getPeopleByName(String name) {
-        return null;
+    public ResponseEntity<List<PersonResponse>> getPeopleByName(@RequestBody @Valid SearchByPersonNameRequest searchByPersonNameRequest) {
+        return personSearchService.searchPersonOneToManyByName(searchByPersonNameRequest.getName())
+                .map(pDto -> ResponseEntity.ok().body(pDto.toResponse()))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     /**
