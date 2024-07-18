@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Singular;
 import osteam.backland.domain.phone.entity.PhoneOneToMany;
-import osteam.backland.domain.phone.entity.PhoneOneToOne;
 import osteam.backland.global.entity.PrimaryKeyEntity;
 
 import java.util.ArrayList;
@@ -19,6 +19,7 @@ public class PersonOneToMany extends PrimaryKeyEntity {
 
     private String name;
 
+    @Singular("phoneOneToMany")
     @OneToMany(
             mappedBy = "personOneToMany",
             orphanRemoval = true,

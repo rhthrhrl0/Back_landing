@@ -71,10 +71,9 @@ public class PersonCreateService {
     private PersonDTO oneToMany(PersonDTO personDTO) {
         PersonOneToMany personOneToMany = PersonOneToMany.builder()
                 .name(personDTO.getName())
-                .phoneOneToMany(new ArrayList<>(Collections.singletonList(PhoneOneToMany.builder()
+                .phoneOneToMany(PhoneOneToMany.builder()
                         .phone(personDTO.getPhone())
-                        .build()
-                )))
+                        .build())
                 .build();
         personOneToManyRepository.save(personOneToMany);
         return personDTO.toBuilder().build();
