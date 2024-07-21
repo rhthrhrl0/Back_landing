@@ -1,5 +1,6 @@
 package osteam.backland.domain.person.repository.custom.onetomany;
 
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
@@ -12,8 +13,8 @@ import static osteam.backland.domain.phone.entity.QPhoneOneToMany.*;
 
 @RequiredArgsConstructor
 public class PersonOneToManyCustomRepositoryImpl implements PersonOneToManyCustomRepository {
-    private final JPAQueryFactory jpaQueryFactory; // 사전에 등록된 빈을 가져옴.
-    private final EntityManager em; // 스프링 부트 3.2 이상부터 프록시 빈이 적용되어서 이렇게 해도 문제 없다고 함.
+    private final EntityManager entityManager;
+    private final JPAQueryFactory jpaQueryFactory; // 사전에 등록된 빈을 가져옴. 프록시 객체여서 새 엔티티 매니저를 가져와서 문제 없음.
 
     // QDSL로 만들어본 조회문
     @Override
@@ -23,6 +24,22 @@ public class PersonOneToManyCustomRepositoryImpl implements PersonOneToManyCusto
                         .selectFrom(personOneToMany)
                         .leftJoin(personOneToMany.phoneOneToMany, phoneOneToMany).fetchJoin()
                         .where(personOneToMany.name.eq(name))
+                        .fetchOne()
+        );
+    }
+
+    @Override
+    public Optional<PersonOneToMany> searchByPhone(String phone) {
+        return Optional.ofNullable(
+                jpaQueryFactory
+                        .selectFrom(personOneToMany)
+                        .leftJoin(personOneToMany.phoneOneToMany, phoneOneToMany).fetchJoin()
+                        .where(personOneToMany.id.in(
+                                JPAExpressions
+                                        .select(phoneOneToMany.personOneToMany.id)
+                                        .from(phoneOneToMany)
+                                        .where(phoneOneToMany.phone.eq(phone))
+                        ))
                         .fetchOne()
         );
     }

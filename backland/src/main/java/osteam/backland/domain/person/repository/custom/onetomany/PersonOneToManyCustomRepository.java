@@ -6,4 +6,5 @@ import java.util.Optional;
 
 public interface PersonOneToManyCustomRepository {
     Optional<PersonOneToMany> searchByName(String name);
+    Optional<PersonOneToMany> searchByPhone(String phone);
 }

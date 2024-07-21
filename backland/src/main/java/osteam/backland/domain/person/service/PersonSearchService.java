@@ -17,10 +17,12 @@ public class PersonSearchService {
     private final PersonOneToManyRepository personOneToManyRepository;
 
     public Optional<PersonOneToManyDTO> searchPersonOneToManyByName(String name) {
-        return personOneToManyRepository.findByName(name) // Spring Data JPA 사용
-                .map(personOneToMany -> PersonOneToManyDTO.builder()
-                        .name(personOneToMany.getName())
-                        .phones(personOneToMany.getPhones())
-                        .build());
+        return personOneToManyRepository.searchByName(name) // Spring Data JPA 사용
+                .map(PersonOneToManyDTO::toDto);
+    }
+
+    public Optional<PersonOneToManyDTO> searchPersonOneToManyByPhone(String phone) {
+        return personOneToManyRepository.searchByPhone(phone) // Spring Data JPA 사용
+                .map(PersonOneToManyDTO::toDto);
     }
 }

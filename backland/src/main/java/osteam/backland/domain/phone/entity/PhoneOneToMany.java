@@ -31,4 +31,9 @@ public class PhoneOneToMany extends PrimaryKeyEntity {
     public void updatePerson(PersonOneToMany personOneToMany) {
         this.personOneToMany = personOneToMany;
     }
+
+    @Override
+    public String toString() {
+        return phone;
+    }
 }

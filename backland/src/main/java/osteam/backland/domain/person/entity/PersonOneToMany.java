@@ -1,10 +1,7 @@
 package osteam.backland.domain.person.entity;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Singular;
+import lombok.*;
 import osteam.backland.domain.phone.entity.PhoneOneToMany;
 import osteam.backland.global.entity.PrimaryKeyEntity;
 
@@ -16,6 +13,7 @@ import java.util.stream.Collectors;
 @Getter
 @Builder(toBuilder = true)
 @NoArgsConstructor
+@ToString
 public class PersonOneToMany extends PrimaryKeyEntity {
 
     private String name;

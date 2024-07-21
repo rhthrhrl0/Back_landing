@@ -7,12 +7,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import osteam.backland.domain.person.controller.request.PersonCreateRequest;
 import osteam.backland.domain.person.controller.request.SearchByPersonNameRequest;
+import osteam.backland.domain.person.controller.request.SearchByPhoneRequest;
 import osteam.backland.domain.person.controller.response.PersonResponse;
 import osteam.backland.domain.person.entity.dto.PersonDTO;
+import osteam.backland.domain.person.entity.dto.PersonOneToManyDTO;
 import osteam.backland.domain.person.service.PersonCreateService;
 import osteam.backland.domain.person.service.PersonSearchService;
 import osteam.backland.domain.person.service.PersonUpdateService;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -68,18 +71,24 @@ public class PersonController {
      */
     @GetMapping("/name")
     public ResponseEntity<List<PersonResponse>> getPeopleByName(@RequestBody @Valid SearchByPersonNameRequest searchByPersonNameRequest) {
-        return personSearchService.searchPersonOneToManyByName(searchByPersonNameRequest.getName())
-                .map(pDto -> ResponseEntity.ok().body(pDto.toResponse()))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        List<PersonResponse> response = personSearchService.searchPersonOneToManyByName(searchByPersonNameRequest.getName())
+                .map(PersonOneToManyDTO::toResponse)
+                .orElse(Collections.emptyList());
+
+        return ResponseEntity.ok(response);
     }
 
     /**
      * 번호로 검색
      *
-     * @param phone
+     * @param searchByPhoneRequest
      */
     @GetMapping("/phone")
-    public ResponseEntity<List<PersonResponse>> getPeopleByPhone(String phone) {
-        return null;
+    public ResponseEntity<List<PersonResponse>> getPeopleByPhone(@RequestBody @Valid SearchByPhoneRequest searchByPhoneRequest) {
+        List<PersonResponse> response = personSearchService.searchPersonOneToManyByPhone(searchByPhoneRequest.getPhone())
+                .map(PersonOneToManyDTO::toResponse)
+                .orElse(Collections.emptyList());
+
+        return ResponseEntity.ok(response);
     }
 }
