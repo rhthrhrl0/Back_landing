@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import osteam.backland.domain.person.controller.response.PersonResponse;
+import osteam.backland.domain.person.controller.response.PersonResponseOneToMany;
 import osteam.backland.domain.person.entity.PersonOneToMany;
 
 import java.util.List;
@@ -17,7 +18,7 @@ public class PersonOneToManyDTO {
     private String name;
     private List<String> phones;
 
-    public List<PersonResponse> toResponse() {
+    public List<PersonResponse> toResponseOneToOne() {
         return phones.stream().
                 map(phone -> PersonResponse.builder()
                         .name(name)
@@ -26,7 +27,15 @@ public class PersonOneToManyDTO {
                 .collect(Collectors.toList());
     }
 
-    public static PersonOneToManyDTO toDto(PersonOneToMany personOneToMany) {
+    public PersonResponseOneToMany toResponseOneToMany() {
+        return PersonResponseOneToMany.builder()
+                .name(name)
+                .phones(phones)
+                .build();
+    }
+
+    public static PersonOneToManyDTO fromOneToMany(PersonOneToMany personOneToMany) {
+        System.out.println("-------" + personOneToMany.getName());
         return PersonOneToManyDTO.builder()
                 .name(personOneToMany.getName())
                 .phones(personOneToMany.getPhones())

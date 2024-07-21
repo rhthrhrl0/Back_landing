@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import osteam.backland.domain.person.entity.dto.PersonOneToManyDTO;
 import osteam.backland.domain.person.repository.PersonOneToManyRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -18,11 +19,17 @@ public class PersonSearchService {
 
     public Optional<PersonOneToManyDTO> searchPersonOneToManyByName(String name) {
         return personOneToManyRepository.searchByName(name) // Spring Data JPA 사용
-                .map(PersonOneToManyDTO::toDto);
+                .map(PersonOneToManyDTO::fromOneToMany);
     }
 
     public Optional<PersonOneToManyDTO> searchPersonOneToManyByPhone(String phone) {
         return personOneToManyRepository.searchByPhone(phone) // Spring Data JPA 사용
-                .map(PersonOneToManyDTO::toDto);
+                .map(PersonOneToManyDTO::fromOneToMany);
+    }
+
+    public List<PersonOneToManyDTO> searchAllPersonOneToMany() {
+        return personOneToManyRepository.findAll().stream()
+                .map(PersonOneToManyDTO::fromOneToMany)
+                .toList();
     }
 }
