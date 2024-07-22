@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import osteam.backland.global.constraint.PhoneNumber;
+import osteam.backland.global.valid.PhoneNumber;
 
 
 @Data

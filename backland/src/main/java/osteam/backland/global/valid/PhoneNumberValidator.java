@@ -1,4 +1,4 @@
-package osteam.backland.global.constraint;
+package osteam.backland.global.valid;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
