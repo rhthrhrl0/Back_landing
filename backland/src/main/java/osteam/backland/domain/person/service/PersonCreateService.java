@@ -16,6 +16,8 @@ import osteam.backland.domain.phone.entity.PhoneOneToMany;
 import osteam.backland.domain.phone.entity.PhoneOneToOne;
 import osteam.backland.domain.phone.repository.PhoneOneToManyRepository;
 
+import java.util.Optional;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor // 빈 주입 받기위해, 롬복의 생성자 자동 생성 기능 사용
@@ -34,16 +36,18 @@ public class PersonCreateService {
         oneToOne(personDTO);
         oneToMany(personDTO);
 
-        return PersonDTO.builder()
-                .name(personDTO.getName())
-                .phone(personDTO.getPhone())
-                .build();
+        return personDTO.toBuilder().build();
     }
 
     /**
      * person 하나로만 구성되어 있는 생성
      */
     private PersonDTO one(PersonDTO personDTO) {
+        return createOne(personDTO);
+    }
+
+    private PersonDTO createOne(PersonDTO personDTO) {
+        log.debug("OneOnly 새 사람 추가");
         PersonOnly personOnly = PersonOnly.builder()
                 .name(personDTO.getName())
                 .phone(personDTO.getPhone())
@@ -57,6 +61,12 @@ public class PersonCreateService {
      * Phone과 OneToOne 관계인 person 생성
      */
     private PersonDTO oneToOne(PersonDTO personDTO) {
+        //  검증 필요
+        return createOneToOne(personDTO);
+    }
+
+    private PersonDTO createOneToOne(PersonDTO personDTO) {
+        log.debug("OneToOne 새 사람 추가");
         PersonOneToOne personOneToOne = PersonOneToOne.builder()
                 .name(personDTO.getName())
                 .phoneOneToOne(PhoneOneToOne.builder().phone(personDTO.getPhone()).build())
@@ -69,15 +79,18 @@ public class PersonCreateService {
     /**
      * Phone과 OneToMany 관계인 person 생성
      */
-    private PersonDTO oneToMany(PersonDTO personDTO) {
-        PersonOneToManyDTO personOneToManyDTO = personSearchService.searchPersonOneToManyByPhone2(personDTO.getPhone());
-        if (personOneToManyDTO != null) {
+    private PersonOneToManyDTO oneToMany(PersonDTO personDTO) {
+        Optional<PersonOneToManyDTO> personOneToManyDTO = validateAlreadyExistOneToMany(personDTO.getPhone());
+        if (personOneToManyDTO.isPresent()) {
             log.debug("사람의 이름을 수정");
             personUpdateService.updatePersonNameByPhone(personDTO.getName(), personDTO.getPhone());
-            return personDTO.toBuilder().build();
+            return personOneToManyDTO.get();
         }
+        return createOneToMany(personDTO);
+    }
 
-        log.debug("새 사람 추가");
+    private PersonOneToManyDTO createOneToMany(PersonDTO personDTO) {
+        log.debug("OneToMany 새 사람 추가");
         PersonOneToMany personOneToMany = PersonOneToMany.builder()
                 .name(personDTO.getName())
                 .phoneOneToMany(PhoneOneToMany.builder()
@@ -85,6 +98,13 @@ public class PersonCreateService {
                         .build())
                 .build();
         personOneToManyRepository.save(personOneToMany);
-        return personDTO.toBuilder().build();
+        return PersonOneToManyDTO.fromOneToMany(personOneToMany);
+    }
+
+
+    // 이미 존재 여부 확인
+    private Optional<PersonOneToManyDTO> validateAlreadyExistOneToMany(String phone) {
+        return personOneToManyRepository.searchByPhone(phone)
+                .map(PersonOneToManyDTO::fromOneToMany);
     }
 }
