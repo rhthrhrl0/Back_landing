@@ -6,11 +6,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import osteam.backland.domain.person.entity.PersonOneToMany;
 import osteam.backland.domain.person.entity.dto.PersonOneToManyDTO;
+import osteam.backland.domain.person.exception.PersonNotFoundException;
 import osteam.backland.domain.person.repository.PersonOneToManyRepository;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,9 +26,16 @@ public class PersonSearchService {
                 .orElse(Collections.emptyList());
     }
 
-    public Optional<PersonOneToManyDTO> searchPersonOneToManyByPhone(String phone) {
+    public PersonOneToManyDTO searchPersonOneToManyByPhone2(String phone) {
         return personOneToManyRepository.searchByPhone(phone)
-                .map(PersonOneToManyDTO::fromOneToMany);
+                .map(PersonOneToManyDTO::fromOneToMany)
+                .orElse(null);
+    }
+
+    public PersonOneToManyDTO searchPersonOneToManyByPhone(String phone) {
+        return personOneToManyRepository.searchByPhone(phone)
+                .map(PersonOneToManyDTO::fromOneToMany)
+                .orElseThrow(()->new PersonNotFoundException("phone번호가 " + phone + "인 사람을 찾을 수 없습니다."));
     }
 
     public List<PersonOneToManyDTO> searchAllPersonOneToMany() {

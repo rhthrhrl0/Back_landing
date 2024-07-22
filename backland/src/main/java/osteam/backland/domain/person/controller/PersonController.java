@@ -8,15 +8,13 @@ import org.springframework.web.bind.annotation.*;
 import osteam.backland.domain.person.controller.request.PersonCreateRequest;
 import osteam.backland.domain.person.controller.request.SearchByPersonNameRequest;
 import osteam.backland.domain.person.controller.request.SearchByPhoneRequest;
-import osteam.backland.domain.person.controller.response.PersonResponse;
-import osteam.backland.domain.person.controller.response.PersonResponseOneToMany;
+import osteam.backland.domain.person.controller.response.PersonOneToManyResponse;
 import osteam.backland.domain.person.entity.dto.PersonDTO;
 import osteam.backland.domain.person.entity.dto.PersonOneToManyDTO;
 import osteam.backland.domain.person.service.PersonCreateService;
 import osteam.backland.domain.person.service.PersonSearchService;
 import osteam.backland.domain.person.service.PersonUpdateService;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -62,8 +60,8 @@ public class PersonController {
      * 전체 검색 기능
      */
     @GetMapping
-    public ResponseEntity<List<PersonResponseOneToMany>> getPeople() {
-        List<PersonResponseOneToMany> response = personSearchService.searchAllPersonOneToMany()
+    public ResponseEntity<List<PersonOneToManyResponse>> getPeople() {
+        List<PersonOneToManyResponse> response = personSearchService.searchAllPersonOneToMany()
                 .stream()
                 .map(PersonOneToManyDTO::toResponseOneToMany)  // DTO를 Response로 변환
                 .collect(Collectors.toList());  // 스트림을 리스트로 수집
@@ -77,8 +75,8 @@ public class PersonController {
      * @param searchByPersonNameRequest
      */
     @GetMapping("/name")
-    public ResponseEntity<List<PersonResponseOneToMany>> getPeopleByName(@RequestBody @Valid SearchByPersonNameRequest searchByPersonNameRequest) {
-        List<PersonResponseOneToMany> response = personSearchService.searchPersonOneToManyByName(searchByPersonNameRequest.getName()).stream()
+    public ResponseEntity<List<PersonOneToManyResponse>> getPeopleByName(@RequestBody @Valid SearchByPersonNameRequest searchByPersonNameRequest) {
+        List<PersonOneToManyResponse> response = personSearchService.searchPersonOneToManyByName(searchByPersonNameRequest.getName()).stream()
                 .map(PersonOneToManyDTO::toResponseOneToMany)
                 .collect(Collectors.toList());
 
@@ -91,10 +89,8 @@ public class PersonController {
      * @param searchByPhoneRequest
      */
     @GetMapping("/phone")
-    public ResponseEntity<List<PersonResponse>> getPeopleByPhone(@RequestBody @Valid SearchByPhoneRequest searchByPhoneRequest) {
-        List<PersonResponse> response = personSearchService.searchPersonOneToManyByPhone(searchByPhoneRequest.getPhone())
-                .map(PersonOneToManyDTO::toResponseOneToOne)
-                .orElse(Collections.emptyList());
+    public ResponseEntity<PersonOneToManyResponse> getPeopleByPhone(@RequestBody @Valid SearchByPhoneRequest searchByPhoneRequest) {
+        PersonOneToManyResponse response = personSearchService.searchPersonOneToManyByPhone(searchByPhoneRequest.getPhone()).toResponseOneToMany();
 
         return ResponseEntity.ok(response);
     }

@@ -8,6 +8,7 @@ import osteam.backland.domain.person.entity.PersonOneToMany;
 import osteam.backland.domain.person.entity.PersonOneToOne;
 import osteam.backland.domain.person.entity.PersonOnly;
 import osteam.backland.domain.person.entity.dto.PersonDTO;
+import osteam.backland.domain.person.entity.dto.PersonOneToManyDTO;
 import osteam.backland.domain.person.repository.PersonOneToManyRepository;
 import osteam.backland.domain.person.repository.PersonOneToOneRepository;
 import osteam.backland.domain.person.repository.PersonOnlyRepository;
@@ -69,25 +70,21 @@ public class PersonCreateService {
      * Phone과 OneToMany 관계인 person 생성
      */
     private PersonDTO oneToMany(PersonDTO personDTO) {
-        personSearchService.searchPersonOneToManyByPhone(personDTO.getPhone())
-                .ifPresentOrElse(personOneToManyDTO -> {
-                            // 연결된 사람의 이릉을 수정할 것.
-//                            personUpdateService
-                            log.debug("사람의 이름을 수정");
-                            personUpdateService.updatePersonNameByPhone(personDTO.getName(), personDTO.getPhone());
-                        },
-                        () -> {
-                            // 이 폰 번호를 기반으로 사람 조회가 안된다? => 그냥 휴대폰 자체가 등록안되었다는 의미. 이 사람이 있는지도 알 수 없음
-                            // 사람이름은 고유 값이 아님. 검사할 필요가 없네???...
-                            log.debug("새 사람 추가");
-                            PersonOneToMany personOneToMany = PersonOneToMany.builder()
-                                    .name(personDTO.getName())
-                                    .phoneOneToMany(PhoneOneToMany.builder()
-                                            .phone(personDTO.getPhone())
-                                            .build())
-                                    .build();
-                            personOneToManyRepository.save(personOneToMany);
-                        });
+        PersonOneToManyDTO personOneToManyDTO = personSearchService.searchPersonOneToManyByPhone2(personDTO.getPhone());
+        if (personOneToManyDTO != null) {
+            log.debug("사람의 이름을 수정");
+            personUpdateService.updatePersonNameByPhone(personDTO.getName(), personDTO.getPhone());
+            return personDTO.toBuilder().build();
+        }
+
+        log.debug("새 사람 추가");
+        PersonOneToMany personOneToMany = PersonOneToMany.builder()
+                .name(personDTO.getName())
+                .phoneOneToMany(PhoneOneToMany.builder()
+                        .phone(personDTO.getPhone())
+                        .build())
+                .build();
+        personOneToManyRepository.save(personOneToMany);
         return personDTO.toBuilder().build();
     }
 }

@@ -7,7 +7,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class PersonResponseOneToMany {
+public class PersonOneToManyResponse {
     @NonNull
     private String name;
 
