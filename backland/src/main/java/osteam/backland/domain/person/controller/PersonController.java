@@ -13,7 +13,6 @@ import osteam.backland.domain.person.entity.dto.PersonDTO;
 import osteam.backland.domain.person.entity.dto.PersonOneToManyDTO;
 import osteam.backland.domain.person.service.PersonCreateService;
 import osteam.backland.domain.person.service.PersonSearchService;
-import osteam.backland.domain.person.service.PersonUpdateService;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,7 +33,6 @@ import java.util.stream.Collectors;
 public class PersonController {
 
     private final PersonCreateService personCreateService;
-    private final PersonUpdateService personUpdateService;
     private final PersonSearchService personSearchService;
 
     /**

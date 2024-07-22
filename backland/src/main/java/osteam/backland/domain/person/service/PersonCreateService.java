@@ -14,7 +14,6 @@ import osteam.backland.domain.person.repository.PersonOneToOneRepository;
 import osteam.backland.domain.person.repository.PersonOnlyRepository;
 import osteam.backland.domain.phone.entity.PhoneOneToMany;
 import osteam.backland.domain.phone.entity.PhoneOneToOne;
-import osteam.backland.domain.phone.repository.PhoneOneToManyRepository;
 
 import java.util.Optional;
 
@@ -24,11 +23,9 @@ import java.util.Optional;
 @Transactional
 public class PersonCreateService {
     private final PersonUpdateService personUpdateService;
-    private final PersonSearchService personSearchService;
     private final PersonOnlyRepository personOnlyRepository;
     private final PersonOneToOneRepository personOneToOneRepository;
     private final PersonOneToManyRepository personOneToManyRepository;
-    private final PhoneOneToManyRepository phoneOneToManyRepository;
 
     // 외부에 공개하는 용도구나. 이거 하나로 모든 관계형 매핑 테이블들 조작할 수 있게
     public PersonDTO createAll(PersonDTO personDTO) {
@@ -43,6 +40,12 @@ public class PersonCreateService {
      * person 하나로만 구성되어 있는 생성
      */
     private PersonDTO one(PersonDTO personDTO) {
+        Optional<PersonDTO> personOnly = validateAlreadyExistOnly(personDTO.getPhone());
+        if (personOnly.isPresent()) {
+            log.debug("사람의 이름을 수정");
+            personOnlyRepository.updatePersonNameByPhone(personDTO.getName(), personDTO.getPhone());
+            return personOnly.get();
+        }
         return createOne(personDTO);
     }
 
@@ -61,7 +64,12 @@ public class PersonCreateService {
      * Phone과 OneToOne 관계인 person 생성
      */
     private PersonDTO oneToOne(PersonDTO personDTO) {
-        //  검증 필요
+        Optional<PersonDTO> personOneToOne = validateAlreadyExistOneToOne(personDTO.getPhone());
+        if (personOneToOne.isPresent()) {
+            log.debug("사람의 이름을 수정");
+            personOneToOneRepository.updatePersonNameByPhone(personDTO.getName(), personDTO.getPhone());
+            return personOneToOne.get();
+        }
         return createOneToOne(personDTO);
     }
 
@@ -106,5 +114,15 @@ public class PersonCreateService {
     private Optional<PersonOneToManyDTO> validateAlreadyExistOneToMany(String phone) {
         return personOneToManyRepository.searchByPhone(phone)
                 .map(PersonOneToManyDTO::fromOneToMany);
+    }
+
+    private Optional<PersonDTO> validateAlreadyExistOnly(String phone) {
+        return personOnlyRepository.searchByPhone(phone)
+                .map(PersonDTO::fromOnly);
+    }
+
+    private Optional<PersonDTO> validateAlreadyExistOneToOne(String phone) {
+        return personOneToOneRepository.searchByPhone(phone)
+                .map(PersonDTO::fromOneToOne);
     }
 }

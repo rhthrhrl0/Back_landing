@@ -1,6 +1,9 @@
 package osteam.backland.domain.person.entity.dto;
 
 import lombok.*;
+import osteam.backland.domain.person.entity.PersonOneToMany;
+import osteam.backland.domain.person.entity.PersonOneToOne;
+import osteam.backland.domain.person.entity.PersonOnly;
 
 @Data
 @Builder(toBuilder = true)
@@ -9,4 +12,18 @@ import lombok.*;
 public class PersonDTO {
     private String name;
     private String phone;
+
+    public static PersonDTO fromOnly(PersonOnly personOnly) {
+        return PersonDTO.builder()
+                .name(personOnly.getName())
+                .phone(personOnly.getPhone())
+                .build();
+    }
+
+    public static PersonDTO fromOneToOne(PersonOneToOne personOneToOne) {
+        return PersonDTO.builder()
+                .name(personOneToOne.getName())
+                .phone(personOneToOne.getPhoneOneToOne().getPhone())
+                .build();
+    }
 }
