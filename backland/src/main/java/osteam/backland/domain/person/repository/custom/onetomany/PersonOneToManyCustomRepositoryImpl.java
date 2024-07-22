@@ -6,6 +6,7 @@ import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import osteam.backland.domain.person.entity.PersonOneToMany;
 
+import java.util.List;
 import java.util.Optional;
 
 import static osteam.backland.domain.person.entity.QPersonOneToMany.*;
@@ -41,6 +42,16 @@ public class PersonOneToManyCustomRepositoryImpl implements PersonOneToManyCusto
                                         .where(phoneOneToMany.phone.eq(phone))
                         ))
                         .fetchOne()
+        );
+    }
+
+    @Override
+    public Optional<List<PersonOneToMany>> searchAll() {
+        return Optional.ofNullable(
+                jpaQueryFactory
+                        .selectFrom(personOneToMany)
+                        .leftJoin(personOneToMany.phoneOneToMany, phoneOneToMany).fetchJoin() // 휴대폰이 없는 사람이라도 조회 목록에 포함시키고 싶어서 leftJoin 사용
+                        .fetch()
         );
     }
 }

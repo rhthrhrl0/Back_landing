@@ -4,11 +4,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import osteam.backland.domain.person.entity.PersonOneToMany;
 import osteam.backland.domain.person.entity.dto.PersonOneToManyDTO;
 import osteam.backland.domain.person.repository.PersonOneToManyRepository;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -18,18 +21,24 @@ public class PersonSearchService {
     private final PersonOneToManyRepository personOneToManyRepository;
 
     public Optional<PersonOneToManyDTO> searchPersonOneToManyByName(String name) {
-        return personOneToManyRepository.searchByName(name) // Spring Data JPA 사용
+        return personOneToManyRepository.searchByName(name)
                 .map(PersonOneToManyDTO::fromOneToMany);
     }
 
     public Optional<PersonOneToManyDTO> searchPersonOneToManyByPhone(String phone) {
-        return personOneToManyRepository.searchByPhone(phone) // Spring Data JPA 사용
+        return personOneToManyRepository.searchByPhone(phone)
                 .map(PersonOneToManyDTO::fromOneToMany);
     }
 
     public List<PersonOneToManyDTO> searchAllPersonOneToMany() {
-        return personOneToManyRepository.findAll().stream()
+        return personOneToManyRepository.searchAll()
+                .map(this::convertToOneToManyDtos)
+                .orElse(Collections.emptyList());
+    }
+
+    private List<PersonOneToManyDTO> convertToOneToManyDtos(List<PersonOneToMany> entities) {
+        return entities.stream()
                 .map(PersonOneToManyDTO::fromOneToMany)
-                .toList();
+                .collect(Collectors.toList());
     }
 }

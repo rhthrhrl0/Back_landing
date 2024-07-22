@@ -35,7 +35,6 @@ public class PersonOneToManyDTO {
     }
 
     public static PersonOneToManyDTO fromOneToMany(PersonOneToMany personOneToMany) {
-        System.out.println("-------" + personOneToMany.getName());
         return PersonOneToManyDTO.builder()
                 .name(personOneToMany.getName())
                 .phones(personOneToMany.getPhones())
