@@ -16,4 +16,10 @@ public class ExceptionResponse {
         this.error = ex.getStatus().name();
         this.message = ex.getDetail();
     }
+
+    public ExceptionResponse(ErrorCode errorCode, String message) {
+        this.statusCode = errorCode.getHttpStatus().value();
+        this.error = errorCode.getHttpStatus().name();
+        this.message = errorCode.getMessage() + " " + message;
+    }
 }

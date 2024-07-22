@@ -13,16 +13,6 @@ public enum ErrorCode {
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "Invalid request."),
 
     /*
-     * 401 UNAUTHORIZED: 인증되지 않은 사용자의 요청
-     */
-    UNAUTHORIZED_REQUEST(HttpStatus.UNAUTHORIZED, "Unauthorized."),
-
-    /*
-     * 403 FORBIDDEN: 권한이 없는 사용자의 요청
-     */
-    FORBIDDEN_ACCESS(HttpStatus.FORBIDDEN, "Forbidden."),
-
-    /*
      * 404 NOT_FOUND: 리소스를 찾을 수 없음
      */
     NOT_FOUND(HttpStatus.NOT_FOUND, "Not found."),
