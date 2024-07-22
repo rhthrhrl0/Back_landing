@@ -42,7 +42,7 @@ public class PersonCreateService {
     private PersonDTO one(PersonDTO personDTO) {
         Optional<PersonDTO> personOnly = validateAlreadyExistOnly(personDTO.getPhone());
         if (personOnly.isPresent()) {
-            log.debug("사람의 이름을 수정");
+            log.debug("OneOnly 사람 이름 수정");
             personOnlyRepository.updatePersonNameByPhone(personDTO.getName(), personDTO.getPhone());
             return personOnly.get();
         }
@@ -66,7 +66,7 @@ public class PersonCreateService {
     private PersonDTO oneToOne(PersonDTO personDTO) {
         Optional<PersonDTO> personOneToOne = validateAlreadyExistOneToOne(personDTO.getPhone());
         if (personOneToOne.isPresent()) {
-            log.debug("사람의 이름을 수정");
+            log.debug("OneToOne 사람 이름 수정");
             personOneToOneRepository.updatePersonNameByPhone(personDTO.getName(), personDTO.getPhone());
             return personOneToOne.get();
         }
@@ -90,7 +90,7 @@ public class PersonCreateService {
     private PersonOneToManyDTO oneToMany(PersonDTO personDTO) {
         Optional<PersonOneToManyDTO> personOneToManyDTO = validateAlreadyExistOneToMany(personDTO.getPhone());
         if (personOneToManyDTO.isPresent()) {
-            log.debug("사람의 이름을 수정");
+            log.debug("OneToMany 사람 이름 수정");
             personUpdateService.updatePersonNameByPhone(personDTO.getName(), personDTO.getPhone());
             return personOneToManyDTO.get();
         }
@@ -118,11 +118,11 @@ public class PersonCreateService {
 
     private Optional<PersonDTO> validateAlreadyExistOnly(String phone) {
         return personOnlyRepository.searchByPhone(phone)
-                .map(PersonDTO::fromOnly);
+                .map(PersonDTO::from);
     }
 
     private Optional<PersonDTO> validateAlreadyExistOneToOne(String phone) {
         return personOneToOneRepository.searchByPhone(phone)
-                .map(PersonDTO::fromOneToOne);
+                .map(PersonDTO::from);
     }
 }

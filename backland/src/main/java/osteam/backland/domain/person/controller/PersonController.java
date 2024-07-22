@@ -8,15 +8,12 @@ import org.springframework.web.bind.annotation.*;
 import osteam.backland.domain.person.controller.request.PersonCreateRequest;
 import osteam.backland.domain.person.controller.request.SearchByPersonNameRequest;
 import osteam.backland.domain.person.controller.request.SearchByPhoneRequest;
-import osteam.backland.domain.person.controller.response.PersonOneToManyResponse;
+import osteam.backland.domain.person.controller.response.search.SearchAllResponse;
+import osteam.backland.domain.person.controller.response.search.SearchByNameResponse;
+import osteam.backland.domain.person.controller.response.search.SearchByPhoneResponse;
 import osteam.backland.domain.person.entity.dto.PersonDTO;
-import osteam.backland.domain.person.entity.dto.PersonOneToManyDTO;
 import osteam.backland.domain.person.service.PersonCreateService;
 import osteam.backland.domain.person.service.PersonSearchService;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * PersonController
@@ -39,30 +36,21 @@ public class PersonController {
      * 등록 기능
      * personRequest를 service에 그대로 넘겨주지 말 것.
      *
-     * @param personCreateRequest
+     * @param request
      * @return 성공 시 이름 반환
      */
     @PostMapping("/create")
-    public ResponseEntity<String> person(@RequestBody @Valid PersonCreateRequest personCreateRequest) {
-        PersonDTO personDTO = PersonDTO.builder()
-                .name(personCreateRequest.getName())
-                .phone(personCreateRequest.getPhone()).build();
-
-        // BadRequest 로 처리하고 싶어서, ResponseEntity.of() 안씀.
-        return Optional.ofNullable(personCreateService.createAll(personDTO))
-                .map(pDto -> ResponseEntity.ok().body(pDto.getName()))
-                .orElseGet(() -> ResponseEntity.badRequest().build());
+    public ResponseEntity<String> person(@RequestBody @Valid PersonCreateRequest request) {
+        String response = personCreateService.createAll(PersonDTO.fromRequest(request)).getName();
+        return ResponseEntity.ok().body(response);
     }
 
     /**
      * 전체 검색 기능
      */
     @GetMapping
-    public ResponseEntity<List<PersonOneToManyResponse>> getPeople() {
-        List<PersonOneToManyResponse> response = personSearchService.searchAllPersonOneToMany()
-                .stream()
-                .map(PersonOneToManyDTO::toResponseOneToMany)  // DTO를 Response로 변환
-                .collect(Collectors.toList());  // 스트림을 리스트로 수집
+    public ResponseEntity<SearchAllResponse> getPeople() {
+        SearchAllResponse response = personSearchService.searchAll().toResponse();
 
         return ResponseEntity.ok(response);
     }
@@ -73,10 +61,8 @@ public class PersonController {
      * @param searchByPersonNameRequest
      */
     @GetMapping("/name")
-    public ResponseEntity<List<PersonOneToManyResponse>> getPeopleByName(@RequestBody @Valid SearchByPersonNameRequest searchByPersonNameRequest) {
-        List<PersonOneToManyResponse> response = personSearchService.searchPersonOneToManyByName(searchByPersonNameRequest.getName()).stream()
-                .map(PersonOneToManyDTO::toResponseOneToMany)
-                .collect(Collectors.toList());
+    public ResponseEntity<SearchByNameResponse> getPeopleByName(@RequestBody @Valid SearchByPersonNameRequest searchByPersonNameRequest) {
+        SearchByNameResponse response = personSearchService.searchAllByName(searchByPersonNameRequest.getName()).toResponse();
 
         return ResponseEntity.ok(response);
     }
@@ -87,8 +73,8 @@ public class PersonController {
      * @param searchByPhoneRequest
      */
     @GetMapping("/phone")
-    public ResponseEntity<PersonOneToManyResponse> getPeopleByPhone(@RequestBody @Valid SearchByPhoneRequest searchByPhoneRequest) {
-        PersonOneToManyResponse response = personSearchService.searchPersonOneToManyByPhone(searchByPhoneRequest.getPhone()).toResponseOneToMany();
+    public ResponseEntity<SearchByPhoneResponse> getPeopleByPhone(@RequestBody @Valid SearchByPhoneRequest searchByPhoneRequest) {
+        SearchByPhoneResponse response = personSearchService.searchAllByPhone(searchByPhoneRequest.getPhone()).toResponse();
 
         return ResponseEntity.ok(response);
     }
