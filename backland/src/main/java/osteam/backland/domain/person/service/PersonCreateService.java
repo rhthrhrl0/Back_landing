@@ -4,12 +4,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import osteam.backland.domain.person.entity.PersonOneToMany;
 import osteam.backland.domain.person.entity.PersonOneToOne;
 import osteam.backland.domain.person.entity.PersonOnly;
 import osteam.backland.domain.person.entity.dto.PersonDTO;
 import osteam.backland.domain.person.repository.PersonOneToManyRepository;
 import osteam.backland.domain.person.repository.PersonOneToOneRepository;
 import osteam.backland.domain.person.repository.PersonOnlyRepository;
+import osteam.backland.domain.phone.entity.PhoneOneToMany;
 import osteam.backland.domain.phone.entity.PhoneOneToOne;
 import osteam.backland.domain.phone.repository.PhoneOneToManyRepository;
 
@@ -69,43 +71,23 @@ public class PersonCreateService {
     private PersonDTO oneToMany(PersonDTO personDTO) {
         personSearchService.searchPersonOneToManyByPhone(personDTO.getPhone())
                 .ifPresentOrElse(personOneToManyDTO -> {
-                            
+                            // 연결된 사람의 이릉을 수정할 것.
+//                            personUpdateService
+                            log.debug("사람의 이름을 수정");
+                            personUpdateService.updatePersonNameByPhone(personDTO.getName(), personDTO.getPhone());
                         },
                         () -> {
-
+                            // 이 폰 번호를 기반으로 사람 조회가 안된다? => 그냥 휴대폰 자체가 등록안되었다는 의미. 이 사람이 있는지도 알 수 없음
+                            // 사람이름은 고유 값이 아님. 검사할 필요가 없네???...
+                            log.debug("새 사람 추가");
+                            PersonOneToMany personOneToMany = PersonOneToMany.builder()
+                                    .name(personDTO.getName())
+                                    .phoneOneToMany(PhoneOneToMany.builder()
+                                            .phone(personDTO.getPhone())
+                                            .build())
+                                    .build();
+                            personOneToManyRepository.save(personOneToMany);
                         });
-//        phoneOneToManyRepository.findByPhone(personDTO.getPhone())
-//                .ifPresentOrElse((phoneOneToMany) -> {
-//                    personOneToManyRepository.findByName(personDTO.getName())
-//                            .ifPresentOrElse((personOneToMany) -> {
-//                                System.out.println("폰 정보와 사람정보 둘 다 있음. 폰의 주인 정보를 변경");
-//                                personOneToMany.addPhone(phoneOneToMany);
-//                            }, () -> {
-//                                System.out.println("폰 정보 있지만 사람정보는 없음. 사람 새로 추가하고 폰의 주인 정보를 변경");
-//                                PersonOneToMany personOneToMany = PersonOneToMany.builder()
-//                                        .name(personDTO.getName())
-//                                        .phoneOneToMany(phoneOneToMany)
-//                                        .build();
-//                                personOneToManyRepository.save(personOneToMany);
-//                            });
-//                }, () -> { // 폰 조회 없는 경우. 신규 등록 폰 번호
-//                    personOneToManyRepository.findByName(personDTO.getName())
-//                            .ifPresentOrElse(personOneToMany -> {
-//                                System.out.println("폰 정보 없지만 사람정보는 있음. 폰 새로 정보 추가");
-//                                personOneToMany.addPhone(PhoneOneToMany.builder()
-//                                        .phone(personDTO.getPhone())
-//                                        .build());
-//                            }, () -> {
-//                                System.out.println("폰 정보 없고 사람정보도 없음. 사람과 폰 둘 다 추가");
-//                                PersonOneToMany personOneToMany = PersonOneToMany.builder()
-//                                        .name(personDTO.getName())
-//                                        .phoneOneToMany(PhoneOneToMany.builder()
-//                                                .phone(personDTO.getPhone())
-//                                                .build())
-//                                        .build();
-//                                personOneToManyRepository.save(personOneToMany);
-//                            });
-//                });
         return personDTO.toBuilder().build();
     }
 }

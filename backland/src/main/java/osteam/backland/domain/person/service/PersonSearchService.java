@@ -20,9 +20,10 @@ import java.util.stream.Collectors;
 public class PersonSearchService {
     private final PersonOneToManyRepository personOneToManyRepository;
 
-    public Optional<PersonOneToManyDTO> searchPersonOneToManyByName(String name) {
+    public List<PersonOneToManyDTO> searchPersonOneToManyByName(String name) {
         return personOneToManyRepository.searchByName(name)
-                .map(PersonOneToManyDTO::fromOneToMany);
+                .map(this::convertToOneToManyDtos)
+                .orElse(Collections.emptyList());
     }
 
     public Optional<PersonOneToManyDTO> searchPersonOneToManyByPhone(String phone) {

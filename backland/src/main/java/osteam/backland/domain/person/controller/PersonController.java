@@ -77,10 +77,10 @@ public class PersonController {
      * @param searchByPersonNameRequest
      */
     @GetMapping("/name")
-    public ResponseEntity<List<PersonResponse>> getPeopleByName(@RequestBody @Valid SearchByPersonNameRequest searchByPersonNameRequest) {
-        List<PersonResponse> response = personSearchService.searchPersonOneToManyByName(searchByPersonNameRequest.getName())
-                .map(PersonOneToManyDTO::toResponseOneToOne)
-                .orElse(Collections.emptyList());
+    public ResponseEntity<List<PersonResponseOneToMany>> getPeopleByName(@RequestBody @Valid SearchByPersonNameRequest searchByPersonNameRequest) {
+        List<PersonResponseOneToMany> response = personSearchService.searchPersonOneToManyByName(searchByPersonNameRequest.getName()).stream()
+                .map(PersonOneToManyDTO::toResponseOneToMany)
+                .collect(Collectors.toList());
 
         return ResponseEntity.ok(response);
     }
