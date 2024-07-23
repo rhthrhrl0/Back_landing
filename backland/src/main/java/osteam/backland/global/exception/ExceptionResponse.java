@@ -1,6 +1,8 @@
 package osteam.backland.global.exception;
 
 import lombok.Getter;
+import osteam.backland.global.exception.model.CustomException;
+import osteam.backland.global.exception.model.ErrorCode;
 
 import java.time.LocalDateTime;
 

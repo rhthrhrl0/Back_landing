@@ -15,8 +15,8 @@ import osteam.backland.domain.person.entity.dto.search.SearchByPhoneDTO;
 import osteam.backland.domain.person.repository.PersonOneToManyRepository;
 import osteam.backland.domain.person.repository.PersonOneToOneRepository;
 import osteam.backland.domain.person.repository.PersonOnlyRepository;
-import osteam.backland.global.exception.CustomException;
-import osteam.backland.global.exception.ErrorCode;
+import osteam.backland.global.exception.model.CustomException;
+import osteam.backland.global.exception.model.ErrorCode;
 
 import java.util.Collections;
 import java.util.List;

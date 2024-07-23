@@ -1,4 +1,4 @@
-package osteam.backland.global.exception;
+package osteam.backland.global.exception.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

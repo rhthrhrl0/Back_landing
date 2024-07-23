@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import osteam.backland.global.exception.model.CustomException;
+import osteam.backland.global.exception.model.ErrorCode;
 
 @Slf4j
 @RestControllerAdvice // 전역 예외 처리
@@ -20,9 +22,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler { // 
      */
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<ExceptionResponse> handleCustomException(CustomException ex) {
-        log.error("CuntomException:: ", ex); // 이거 없으면 안뜸.
-        ExceptionResponse exceptionResponse = new ExceptionResponse(ex);
-        return ResponseEntity.status(exceptionResponse.getStatusCode()).body(exceptionResponse);
+        log.error("CustomException:: ", ex);
+        return createExceptionResponse(ex);
     }
 
 
@@ -32,7 +33,21 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler { // 
                                                                   HttpHeaders headers,
                                                                   HttpStatusCode status,
                                                                   WebRequest request) {
-        BindingResult bindingResult = e.getBindingResult();
+        logFiledFromBindingResults(e.getBindingResult());
+        return createExceptionResponse(ErrorCode.BAD_REQUEST, e.getMessage());
+    }
+
+    private ResponseEntity<Object> createExceptionResponse(ErrorCode errorCode, String message) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(errorCode, message);
+        return ResponseEntity.status(exceptionResponse.getStatusCode()).body(exceptionResponse);
+    }
+
+    private ResponseEntity<ExceptionResponse> createExceptionResponse(CustomException ex) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(ex);
+        return ResponseEntity.status(exceptionResponse.getStatusCode()).body(exceptionResponse);
+    }
+
+    private void logFiledFromBindingResults(BindingResult bindingResult) {
         bindingResult.getAllErrors().forEach(error -> {
             FieldError fieldError = (FieldError) error;
 
@@ -40,11 +55,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler { // 
             String message = fieldError.getDefaultMessage();  // 에러 메세지
             Object value = fieldError.getRejectedValue(); // 주입된 실제 값. 널일 수 있어서 toString() 호출하기 애매함.
 
-            log.error("fieldName : " + fieldName);
-            log.error("message : " + message);
-            log.error("value : " + value);
+
+            log.error("fieldName : {}", fieldName);
+            log.error("message : {}", message);
+            log.error("value : {}", value);
         });
-        ExceptionResponse exceptionResponse = new ExceptionResponse(ErrorCode.BAD_REQUEST, e.getMessage());
-        return ResponseEntity.status(exceptionResponse.getStatusCode()).body(exceptionResponse);
     }
 }

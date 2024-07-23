@@ -51,7 +51,6 @@ public class PersonController {
     @GetMapping
     public ResponseEntity<SearchAllResponse> getPeople() {
         SearchAllResponse response = personSearchService.searchAll().toResponse();
-
         return ResponseEntity.ok(response);
     }
 
@@ -63,7 +62,6 @@ public class PersonController {
     @GetMapping("/name")
     public ResponseEntity<SearchByNameResponse> getPeopleByName(@RequestBody @Valid SearchByPersonNameRequest searchByPersonNameRequest) {
         SearchByNameResponse response = personSearchService.searchAllByName(searchByPersonNameRequest.getName()).toResponse();
-
         return ResponseEntity.ok(response);
     }
 
@@ -75,7 +73,6 @@ public class PersonController {
     @GetMapping("/phone")
     public ResponseEntity<SearchByPhoneResponse> getPeopleByPhone(@RequestBody @Valid SearchByPhoneRequest searchByPhoneRequest) {
         SearchByPhoneResponse response = personSearchService.searchAllByPhone(searchByPhoneRequest.getPhone()).toResponse();
-
         return ResponseEntity.ok(response);
     }
 }
