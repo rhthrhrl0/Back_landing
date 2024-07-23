@@ -28,7 +28,7 @@ public class PersonDTO {
                 .build();
     }
 
-    public static PersonDTO fromRequest(PersonCreateRequest personCreateRequest) {
+    public static PersonDTO from(PersonCreateRequest personCreateRequest) {
         return PersonDTO.builder()
                 .name(personCreateRequest.getName())
                 .phone(personCreateRequest.getPhone())
