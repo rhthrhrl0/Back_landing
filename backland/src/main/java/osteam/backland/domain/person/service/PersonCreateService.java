@@ -53,12 +53,16 @@ public class PersonCreateService {
 
     private PersonDTO createOne(PersonDTO personDTO) {
         log.debug("Only 새 사람 추가");
-        PersonOnly personOnly = PersonOnly.builder()
+        PersonOnly personOnly = convertToPersonOnly(personDTO);
+        personOnlyRepository.save(personOnly);
+        return personDTO.toBuilder().build();
+    }
+
+    private PersonOnly convertToPersonOnly(PersonDTO personDTO) {
+        return PersonOnly.builder()
                 .name(personDTO.getName())
                 .phone(personDTO.getPhone())
                 .build();
-        personOnlyRepository.save(personOnly);
-        return personDTO.toBuilder().build();
     }
 
     /**
@@ -75,12 +79,18 @@ public class PersonCreateService {
 
     private PersonDTO createOneToOne(PersonDTO personDTO) {
         log.debug("OneToOne 새 사람 추가");
-        PersonOneToOne personOneToOne = PersonOneToOne.builder()
-                .name(personDTO.getName())
-                .phoneOneToOne(PhoneOneToOne.builder().phone(personDTO.getPhone()).build())
-                .build();
+        PersonOneToOne personOneToOne = convertToPersonOneToOne(personDTO);
         personOneToOneRepository.save(personOneToOne);
         return personDTO.toBuilder().build();
+    }
+
+    private PersonOneToOne convertToPersonOneToOne(PersonDTO personDTO) {
+        return PersonOneToOne.builder()
+                .name(personDTO.getName())
+                .phoneOneToOne(PhoneOneToOne.builder()
+                        .phone(personDTO.getPhone())
+                        .build())
+                .build();
     }
 
     /**
@@ -97,13 +107,17 @@ public class PersonCreateService {
 
     private PersonOneToManyDTO createOneToMany(PersonDTO personDTO) {
         log.debug("OneToMany 새 사람 추가");
-        PersonOneToMany personOneToMany = PersonOneToMany.builder()
+        PersonOneToMany personOneToMany = convertToPersonOneToMany(personDTO);
+        personOneToManyRepository.save(personOneToMany);
+        return PersonOneToManyDTO.fromOneToMany(personOneToMany);
+    }
+
+    private PersonOneToMany convertToPersonOneToMany(PersonDTO personDTO) {
+        return PersonOneToMany.builder()
                 .name(personDTO.getName())
                 .phoneOneToMany(PhoneOneToMany.builder()
                         .phone(personDTO.getPhone())
                         .build())
                 .build();
-        personOneToManyRepository.save(personOneToMany);
-        return PersonOneToManyDTO.fromOneToMany(personOneToMany);
     }
 }
