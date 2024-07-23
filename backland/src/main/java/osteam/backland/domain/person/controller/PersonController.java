@@ -1,7 +1,5 @@
 package osteam.backland.domain.person.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +27,7 @@ import osteam.backland.domain.person.service.PersonSearchService;
 @RestController // @Controller와 다르며, 메소드마다 리스폰스바디 어노테이션을 안달아도 된다. 뷰 필요없는 경우 씀
 @RequestMapping("/person")
 @RequiredArgsConstructor
-public class PersonController {
+public class PersonController implements PersonControllerDocs {
 
     private final PersonCreateService personCreateService;
     private final PersonSearchService personSearchService;
@@ -41,7 +39,6 @@ public class PersonController {
      * @param request
      * @return 성공 시 이름 반환
      */
-    @Tag(name = "유저 추가/수정 API")
     @PostMapping("/create")
     public ResponseEntity<String> person(@RequestBody @Valid PersonCreateRequest request) {
         String response = personCreateService.createAll(PersonDTO.from(request)).getName();
@@ -51,8 +48,6 @@ public class PersonController {
     /**
      * 전체 검색 기능
      */
-    @Operation(summary = "전체 조회", description = "Only, OneToOne, OneToMany 모두 조회해서 하나로 묶어 응답")
-    @Tag(name = "유저 정보 조회 API")
     @GetMapping
     public ResponseEntity<SearchAllResponse> getPeople() {
         SearchAllResponse response = personSearchService.searchAll().toResponse();
@@ -64,8 +59,6 @@ public class PersonController {
      *
      * @param searchByPersonNameRequest
      */
-    @Operation(summary = "이름 기반으로 조회", description = "Only, OneToOne, OneToMany 모두 조회해서 하나로 묶어 응답. 사람의 이름은 유니크하지 않으므로 각각 배열 형태로 전달될 것임.")
-    @Tag(name = "유저 정보 조회 API")
     @GetMapping("/name")
     public ResponseEntity<SearchByNameResponse> getPeopleByName(@RequestBody @Valid SearchByPersonNameRequest searchByPersonNameRequest) {
         SearchByNameResponse response = personSearchService.searchAllByName(searchByPersonNameRequest.getName()).toResponse();
@@ -77,8 +70,6 @@ public class PersonController {
      *
      * @param searchByPhoneRequest
      */
-    @Operation(summary = "폰 번호 기반으로 조회", description = "Only, OneToOne, OneToMany 모두 조회해서 하나로 묶어 응답. 휴대폰 번호는 유니크함. 한 객체씩만 전달될 것임")
-    @Tag(name = "유저 정보 조회 API")
     @GetMapping("/phone")
     public ResponseEntity<SearchByPhoneResponse> getPeopleByPhone(@RequestBody @Valid SearchByPhoneRequest searchByPhoneRequest) {
         SearchByPhoneResponse response = personSearchService.searchAllByPhone(searchByPhoneRequest.getPhone()).toResponse();
