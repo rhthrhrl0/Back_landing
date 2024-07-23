@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 @Getter
 @Builder(toBuilder = true)
 @NoArgsConstructor
-@ToString
 public class PersonOneToMany extends PrimaryKeyEntity {
 
     private String name;
