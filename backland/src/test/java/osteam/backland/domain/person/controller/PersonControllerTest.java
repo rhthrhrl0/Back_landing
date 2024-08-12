@@ -2,24 +2,59 @@ package osteam.backland.domain.person.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import osteam.backland.domain.person.controller.request.PersonCreateRequest;
+import osteam.backland.domain.person.service.PersonCreateService;
+import osteam.backland.domain.person.service.PersonSearchService;
 
-@SpringBootTest
+import static org.hamcrest.Matchers.containsString;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@WebMvcTest(controllers = PersonController.class)
+@ActiveProfiles("default")
 public class PersonControllerTest {
 
+    @Autowired
     private MockMvc mock;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
+    @MockBean
+    private PersonCreateService personCreateService;
+
+    @MockBean
+    private PersonSearchService personSearchService;
+
     @Test
-    void longNamePersonTest() throws JsonProcessingException {
+    @DisplayName("사람이름이 너무 길어서 ExceptionResponse 반환")
+    void longNamePersonTest() throws Exception {
+        // given
         String longNamePerson = objectMapper
                 .writeValueAsString(new PersonCreateRequest(
                         "teamaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
                         "01012341234"
                 ));
+
+        // when, then
+        mock.perform(MockMvcRequestBuilders.post("/person/create")
+                        .content(longNamePerson)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value(containsString("이름은 1자 이상 20자 이하여야 합니다.")));
     }
 
     @Test
