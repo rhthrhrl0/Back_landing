@@ -135,13 +135,22 @@ public class PersonControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value(containsString("이름은 1자 이상 20자 이하여야 합니다.")))
                 .andExpect(jsonPath("$.message").value(containsString("핸드폰 번호 양식에 맞지 않습니다. ex) 010-0000-0000")));
-
     }
 
     @Test
-    void nullInputTest() throws JsonProcessingException {
-        String longPhonePerson = objectMapper
+    @DisplayName("요청 인풋 전체가 그냥 널인 경우")
+    void nullInputTest() throws Exception {
+        // given
+        String nullPhonePerson = objectMapper
                 .writeValueAsString(null);
+
+        // when, then
+        mock.perform(MockMvcRequestBuilders.post("/person/create")
+                        .content(nullPhonePerson)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isBadRequest());
     }
 
 
