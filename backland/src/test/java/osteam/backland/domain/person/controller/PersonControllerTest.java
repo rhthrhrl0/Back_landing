@@ -117,12 +117,25 @@ public class PersonControllerTest {
     }
 
     @Test
-    void blankPersonTest() throws JsonProcessingException {
+    @DisplayName("사람 이름과 폰 번호에 Blank가 들어간 경우")
+    void blankPersonTest() throws Exception {
+        // given
         String blankPerson = objectMapper
                 .writeValueAsString(new PersonCreateRequest(
                         "",
                         ""
                 ));
+
+        // when, then
+        mock.perform(MockMvcRequestBuilders.post("/person/create")
+                        .content(blankPerson)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value(containsString("이름은 1자 이상 20자 이하여야 합니다.")))
+                .andExpect(jsonPath("$.message").value(containsString("핸드폰 번호 양식에 맞지 않습니다. ex) 010-0000-0000")));
+
     }
 
     @Test
