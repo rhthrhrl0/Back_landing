@@ -1,12 +1,10 @@
 package osteam.backland.domain.person.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -14,12 +12,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import osteam.backland.domain.person.controller.request.PersonCreateRequest;
+import osteam.backland.domain.person.entity.dto.PersonDTO;
 import osteam.backland.domain.person.service.PersonCreateService;
 import osteam.backland.domain.person.service.PersonSearchService;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = PersonController.class)
 @ActiveProfiles("default")
@@ -36,6 +36,38 @@ public class PersonControllerTest {
 
     @MockBean
     private PersonSearchService personSearchService;
+
+    @Test
+    @DisplayName("이름과 폰 번호를 양식에 맞게 넣으면 ok 응답이 반환")
+    void successNamePersonTest() throws Exception {
+        // given
+        String originName = "sos";
+        String phone = "010-1234-1234";
+
+        String successPerson = objectMapper
+                .writeValueAsString(new PersonCreateRequest(
+                        originName,
+                        phone
+                ));
+
+        PersonDTO personDTO = PersonDTO.builder()
+                .name(originName)
+                .phone(phone)
+                .build();
+
+        // Mock 객체 행동 지정
+        when(personCreateService.createAll(argThat(argument ->
+                argument.getName().equals(originName) && argument.getPhone().equals(phone) // createAll 로 들어온 인풋의 조건이 이거일 경우에만
+        ))).thenReturn(personDTO);
+
+        mock.perform(MockMvcRequestBuilders.post("/person/create")
+                        .content(successPerson)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk())
+                .andExpect(content().string("sos"));
+    }
 
     @Test
     @DisplayName("사람이름이 너무 길어서 ExceptionResponse 반환")
@@ -153,23 +185,4 @@ public class PersonControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-
-    @Test
-    void changeNamePersonTest() throws JsonProcessingException {
-        String originName = "sos";
-        String phone = "01012341234";
-        String changeName = "team";
-
-        String successPerson = objectMapper
-                .writeValueAsString(new PersonCreateRequest(
-                        originName,
-                        phone
-                ));
-
-        String changePerson = objectMapper
-                .writeValueAsString(new PersonCreateRequest(
-                        changeName,
-                        phone
-                ));
-    }
 }
