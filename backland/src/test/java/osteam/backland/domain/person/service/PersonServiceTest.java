@@ -10,9 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 import osteam.backland.domain.person.entity.dto.PersonDTO;
 import osteam.backland.domain.person.entity.dto.search.SearchByNameDTO;
 import osteam.backland.domain.person.entity.dto.search.SearchByPhoneDTO;
+import osteam.backland.global.exception.model.CustomException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @Transactional
@@ -139,5 +141,30 @@ class PersonServiceTest {
                 () -> assertThat(searchByNameDTO.getPersonOneToOne().size()).isEqualTo(0),
                 () -> assertThat(searchByNameDTO.getPersonOneToMany().size()).isEqualTo(0)
         );
+    }
+
+
+    @Test
+    @DisplayName("폰 번호가 010-1111-2222인 사람 조회시 이름이 홍길동")
+    void successSearchPersonPhone() {
+        // when
+        SearchByPhoneDTO searchByPhoneDTO = personSearchService.searchAllByPhone("010-1111-2222");
+
+        assertAll(
+                () -> assertThat(searchByPhoneDTO.getPersonOnly().getName()).isEqualTo("홍길동"),
+                () -> assertThat(searchByPhoneDTO.getPersonOneToOne().getName()).isEqualTo("홍길동"),
+                () -> assertThat(searchByPhoneDTO.getPersonOneToMany().getName()).isEqualTo("홍길동")
+        );
+    }
+
+    @Test
+    @DisplayName("폰 번호가 010-8888-9999인 사람 조회시 실패")
+    void failedSearchPersonPhone() {
+        // when, then
+        CustomException customException = assertThrows(CustomException.class, () -> {
+            personSearchService.searchAllByPhone("010-8888-9999");
+        });
+
+        assertThat(customException.getErrorMessage()).isEqualTo("phone번호가 " + "010-8888-9999" + "인 사람을 찾을 수 없습니다.");
     }
 }
