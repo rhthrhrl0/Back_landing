@@ -2,6 +2,7 @@ package osteam.backland.global.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -12,7 +13,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import osteam.backland.global.exception.model.CustomException;
-import osteam.backland.global.exception.model.ErrorCode;
 
 @Slf4j
 @RestControllerAdvice // 전역 예외 처리
@@ -34,11 +34,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler { // 
                                                                   HttpStatusCode status,
                                                                   WebRequest request) {
         logFiledFromBindingResults(e.getBindingResult());
-        return createExceptionResponse(ErrorCode.BAD_REQUEST, e.getMessage());
+        return createExceptionResponse(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
-    private ResponseEntity<Object> createExceptionResponse(ErrorCode errorCode, String message) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(errorCode, message);
+    private ResponseEntity<Object> createExceptionResponse(HttpStatus httpStatus, String message) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(httpStatus, message);
         return ResponseEntity.status(exceptionResponse.getStatusCode()).body(exceptionResponse);
     }
 

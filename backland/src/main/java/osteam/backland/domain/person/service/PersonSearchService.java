@@ -2,6 +2,7 @@ package osteam.backland.domain.person.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import osteam.backland.domain.person.entity.PersonOneToMany;
@@ -16,7 +17,6 @@ import osteam.backland.domain.person.repository.PersonOneToManyRepository;
 import osteam.backland.domain.person.repository.PersonOneToOneRepository;
 import osteam.backland.domain.person.repository.PersonOnlyRepository;
 import osteam.backland.global.exception.model.CustomException;
-import osteam.backland.global.exception.model.ErrorCode;
 
 import java.util.Collections;
 import java.util.List;
@@ -71,19 +71,19 @@ public class PersonSearchService {
     private PersonDTO searchPersonOnlyByPhone(String phone) {
         return personOnlyRepository.searchByPhone(phone)
                 .map(PersonDTO::from)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND, "phone번호가 " + phone + "인 사람을 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "phone번호가 " + phone + "인 사람을 찾을 수 없습니다."));
     }
 
     private PersonDTO searchPersonOneToOneByPhone(String phone) {
         return personOneToOneRepository.searchByPhone(phone)
                 .map(PersonDTO::from)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND, "phone번호가 " + phone + "인 사람을 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "phone번호가 " + phone + "인 사람을 찾을 수 없습니다."));
     }
 
     private PersonOneToManyDTO searchPersonOneToManyByPhone(String phone) {
         return personOneToManyRepository.searchByPhone(phone)
                 .map(PersonOneToManyDTO::fromOneToMany)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND, "phone번호가 " + phone + "인 사람을 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "phone번호가 " + phone + "인 사람을 찾을 수 없습니다."));
     }
 
     // 전체 검색

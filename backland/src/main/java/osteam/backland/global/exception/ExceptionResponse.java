@@ -1,8 +1,8 @@
 package osteam.backland.global.exception;
 
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 import osteam.backland.global.exception.model.CustomException;
-import osteam.backland.global.exception.model.ErrorCode;
 
 import java.time.LocalDateTime;
 
@@ -16,12 +16,12 @@ public class ExceptionResponse {
     public ExceptionResponse(CustomException ex) {
         this.statusCode = ex.getStatus().value();
         this.error = ex.getStatus().name();
-        this.message = ex.getDetail();
+        this.message = ex.getErrorMessage();
     }
 
-    public ExceptionResponse(ErrorCode errorCode, String message) {
-        this.statusCode = errorCode.getHttpStatus().value();
-        this.error = errorCode.getHttpStatus().name();
-        this.message = errorCode.getMessage() + " " + message;
+    public ExceptionResponse(HttpStatus errorCode, String message) {
+        this.statusCode = errorCode.value();
+        this.error = errorCode.name();
+        this.message = message;
     }
 }
