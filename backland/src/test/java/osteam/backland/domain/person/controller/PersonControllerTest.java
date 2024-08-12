@@ -58,12 +58,23 @@ public class PersonControllerTest {
     }
 
     @Test
-    void longPhonePersonTest() throws JsonProcessingException {
+    @DisplayName("폰 번호 양식에 맞지 않아서 ExceptionResponse 반환")
+    void longPhonePersonTest() throws Exception {
+        // given
         String longPhonePerson = objectMapper
                 .writeValueAsString(new PersonCreateRequest(
                         "team",
-                        "010123412341111111111111111111111"
+                        "010-12341234-1111111111111111111111"
                 ));
+
+        // when, then
+        mock.perform(MockMvcRequestBuilders.post("/person/create")
+                        .content(longPhonePerson)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value(containsString("핸드폰 번호 양식에 맞지 않습니다. ex) 010-0000-0000")));
     }
 
     @Test
