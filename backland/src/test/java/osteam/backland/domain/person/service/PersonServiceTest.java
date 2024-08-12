@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import osteam.backland.domain.person.entity.dto.PersonDTO;
+import osteam.backland.domain.person.entity.dto.search.SearchAllDTO;
 import osteam.backland.domain.person.entity.dto.search.SearchByNameDTO;
 import osteam.backland.domain.person.entity.dto.search.SearchByPhoneDTO;
 import osteam.backland.global.exception.model.CustomException;
@@ -110,6 +111,7 @@ class PersonServiceTest {
         // when
         SearchByNameDTO searchByNameDTO = personSearchService.searchAllByName("홍길동");
 
+        // then
         assertAll(
                 () -> assertThat(searchByNameDTO.getPersonOnly().size()).isEqualTo(2),
                 () -> assertThat(searchByNameDTO.getPersonOneToOne().size()).isEqualTo(2),
@@ -123,6 +125,7 @@ class PersonServiceTest {
         // when
         SearchByNameDTO searchByNameDTO = personSearchService.searchAllByName("김철수");
 
+        // then
         assertAll(
                 () -> assertThat(searchByNameDTO.getPersonOnly().size()).isEqualTo(1),
                 () -> assertThat(searchByNameDTO.getPersonOneToOne().size()).isEqualTo(1),
@@ -136,6 +139,7 @@ class PersonServiceTest {
         // when
         SearchByNameDTO searchByNameDTO = personSearchService.searchAllByName("이몽룡");
 
+        // then
         assertAll(
                 () -> assertThat(searchByNameDTO.getPersonOnly().size()).isEqualTo(0),
                 () -> assertThat(searchByNameDTO.getPersonOneToOne().size()).isEqualTo(0),
@@ -150,6 +154,7 @@ class PersonServiceTest {
         // when
         SearchByPhoneDTO searchByPhoneDTO = personSearchService.searchAllByPhone("010-1111-2222");
 
+        // then
         assertAll(
                 () -> assertThat(searchByPhoneDTO.getPersonOnly().getName()).isEqualTo("홍길동"),
                 () -> assertThat(searchByPhoneDTO.getPersonOneToOne().getName()).isEqualTo("홍길동"),
@@ -166,5 +171,19 @@ class PersonServiceTest {
         });
 
         assertThat(customException.getErrorMessage()).isEqualTo("phone번호가 " + "010-8888-9999" + "인 사람을 찾을 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("모든 유저 조회시 결과는 3명")
+    void searchAllPerson() {
+        // when
+        SearchAllDTO searchAllDTO = personSearchService.searchAll();
+
+        // then
+        assertAll(
+                () -> assertThat(searchAllDTO.getPersonOnly().size()).isEqualTo(3),
+                () -> assertThat(searchAllDTO.getPersonOneToOne().size()).isEqualTo(3),
+                () -> assertThat(searchAllDTO.getPersonOneToMany().size()).isEqualTo(3)
+        );
     }
 }
