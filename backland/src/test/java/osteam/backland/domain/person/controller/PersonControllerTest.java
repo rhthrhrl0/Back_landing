@@ -58,7 +58,7 @@ public class PersonControllerTest {
     }
 
     @Test
-    @DisplayName("폰 번호 양식에 맞지 않아서 ExceptionResponse 반환")
+    @DisplayName("폰 번호 양식에 맞지 않아서 ExceptionResponse 반환 - 너무 긴 경우")
     void longPhonePersonTest() throws Exception {
         // given
         String longPhonePerson = objectMapper
@@ -78,21 +78,42 @@ public class PersonControllerTest {
     }
 
     @Test
-    void shortPhonePersonTest() throws JsonProcessingException {
+    @DisplayName("폰 번호 양식에 맞지 않아서 ExceptionResponse 반환 - 너무 짧은 경우")
+    void shortPhonePersonTest() throws Exception {
         String shortPhonePerson = objectMapper
                 .writeValueAsString(new PersonCreateRequest(
                         "team",
                         "010"
                 ));
+
+        // when, then
+        mock.perform(MockMvcRequestBuilders.post("/person/create")
+                        .content(shortPhonePerson)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value(containsString("핸드폰 번호 양식에 맞지 않습니다. ex) 010-0000-0000")));
     }
 
     @Test
-    void nullPersonTest() throws JsonProcessingException {
+    @DisplayName("이름과 폰 번호에 NULL 들어갈 경우 ExceptionResponse 반환")
+    void nullPersonTest() throws Exception {
         String nullPerson = objectMapper
                 .writeValueAsString(new PersonCreateRequest(
                         null,
                         null
                 ));
+
+        // when, then
+        mock.perform(MockMvcRequestBuilders.post("/person/create")
+                        .content(nullPerson)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value(containsString("폰 번호는 NULL 일 수 없습니다.")))
+                .andExpect(jsonPath("$.message").value(containsString("이름은 NULL 일 수 없습니다.")));
     }
 
     @Test
