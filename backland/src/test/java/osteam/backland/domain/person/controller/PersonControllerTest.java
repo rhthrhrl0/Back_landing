@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = PersonController.class)
-@ActiveProfiles("default")
+@ActiveProfiles("dev")
 public class PersonControllerTest {
 
     @Autowired
@@ -60,6 +60,7 @@ public class PersonControllerTest {
                 argument.getName().equals(originName) && argument.getPhone().equals(phone) // createAll 로 들어온 인풋의 조건이 이거일 경우에만
         ))).thenReturn(personDTO);
 
+        // when, then
         mock.perform(MockMvcRequestBuilders.post("/person/create")
                         .content(successPerson)
                         .contentType(MediaType.APPLICATION_JSON)
