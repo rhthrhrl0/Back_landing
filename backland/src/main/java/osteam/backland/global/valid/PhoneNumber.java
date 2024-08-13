@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PhoneNumber {
     String message() default "핸드폰 번호 양식에 맞지 않습니다. ex) 010-0000-0000";
-    String regexp() default "^\\d{2,3}-\\d{3,4}-\\d{4}$";
+    String regexp() default "^01(?:0|1|[6-9])-(?:\\d{3}|\\d{4})-\\d{4}$";
 
     Class<?>[] groups() default { };
 
