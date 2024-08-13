@@ -19,17 +19,14 @@ public class PersonUpdateService {
     private final PersonOneToManyRepository personOneToManyRepository;
 
     public void updatePersonOnlyNameByPhone(PersonDTO personDTO) {
-        log.debug("Only 사람 이름 수정");
         personOnlyRepository.updatePersonNameByPhone(personDTO.getName(), personDTO.getPhone());
     }
 
     public void updatePersonOneToOneNameByPhone(PersonDTO personDTO) {
-        log.debug("OneToOne 사람 이름 수정");
         personOneToOneRepository.updatePersonNameByPhone(personDTO.getName(), personDTO.getPhone());
     }
 
     public void updatePersonOneToManyNameByPhone(PersonDTO personDTO) {
-        log.debug("OneToMany 사람 이름 수정");
         personOneToManyRepository.updatePersonNameByPhone(personDTO.getName(), personDTO.getPhone());
     }
 }
