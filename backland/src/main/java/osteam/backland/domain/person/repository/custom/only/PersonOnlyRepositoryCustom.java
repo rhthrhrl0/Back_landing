@@ -5,7 +5,7 @@ import osteam.backland.domain.person.entity.PersonOnly;
 import java.util.List;
 import java.util.Optional;
 
-public interface PersonOnlyCustomRepository {
+public interface PersonOnlyRepositoryCustom {
     Optional<List<PersonOnly>> searchByName(String name);
 
     Optional<PersonOnly> searchByPhone(String phone);

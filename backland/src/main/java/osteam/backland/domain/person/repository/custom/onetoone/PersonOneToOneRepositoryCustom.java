@@ -1,12 +1,11 @@
 package osteam.backland.domain.person.repository.custom.onetoone;
 
-import osteam.backland.domain.person.entity.PersonOneToMany;
 import osteam.backland.domain.person.entity.PersonOneToOne;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface PersonOneToOneCustomRepository {
+public interface PersonOneToOneRepositoryCustom {
     Optional<List<PersonOneToOne>> searchByName(String name);
 
     Optional<PersonOneToOne> searchByPhone(String phone);

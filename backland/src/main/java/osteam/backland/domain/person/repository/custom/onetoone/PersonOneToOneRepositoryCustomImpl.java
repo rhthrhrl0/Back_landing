@@ -15,7 +15,7 @@ import static osteam.backland.domain.phone.entity.QPhoneOneToOne.phoneOneToOne;
 
 @Slf4j
 @RequiredArgsConstructor
-public class PersonOneToOneCustomRepositoryImpl implements PersonOneToOneCustomRepository {
+public class PersonOneToOneRepositoryCustomImpl implements PersonOneToOneRepositoryCustom {
     private final EntityManager entityManager; // 프록시 객체임.
     private final JPAQueryFactory jpaQueryFactory; // 사전에 등록된 빈을 가져옴. 프록시 객체여서 새 엔티티 매니저를 가져와서 문제 없음.
 

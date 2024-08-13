@@ -13,7 +13,7 @@ import static osteam.backland.domain.person.entity.QPersonOnly.personOnly;
 
 @Slf4j
 @RequiredArgsConstructor
-public class PersonOnlyCustomRepositoryImpl implements PersonOnlyCustomRepository {
+public class PersonOnlyRepositoryCustomImpl implements PersonOnlyRepositoryCustom {
     private final EntityManager entityManager; // 프록시 객체임.
     private final JPAQueryFactory jpaQueryFactory; // 사전에 등록된 빈을 가져옴. 프록시 객체여서 새 엔티티 매니저를 가져와서 문제 없음.
 
